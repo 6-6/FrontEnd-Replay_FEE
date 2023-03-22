@@ -32,7 +32,7 @@ npm init -y # 生成默认 package.json 文件
 code cli.js # 新建 cli.js 文件
 ```
 
-在 package.json 文件中 `"main"` 字段，指定入口文件为 cli.js，`"bin"` 字段代表可执行文件的路径
+在 package.json 文件中 `"main"` 字段，指定入口文件为 cli.js，`"bin"` 字段代表可执行文件的路径，也可以自定义调用命令 `"bin": {"my-node-create": "cli.js"}`。
 
 > 关于package.json相关的，请看：[关于前端大管家 package.json，你知道多少？](https://juejin.cn/post/7023539063424548872) 
 
@@ -66,7 +66,20 @@ console.log('my-node-cli working~')
 ```
 
 #### 1.3 npm link 链接到全局
-那么 `npm link` 是什么呢？简单来说就是软链接，在这里只是用作于全局的命令。成功添加了，在 Node 目录下可以看到相关命令行文件。在实际开发中还可以在项目本地中引用，不需打包上传到npm。
+直接运行 `my-node-cli` 会发生什么？
+
+得到以下结果：
+`bash: my-node-cli: command not found`
+
+运行环境并不认识我们自定义的这个命令，如何介绍给它认识？那么就要说到 `npm link` 这个命令。
+
+其原理是创建一个符号链接（symbolic link），将本地的模块链接到全局的node_modules文件夹中，使得全局可以直接调用本地的模块。
+
+成功添加了，去全局的node_modules看看是否有这个文件
+![](./img/npm-link1.png)
+
+在 Node 目录下可以看到相关命令行文件。
+![](./img/npm-link2.png)
 
 ```shell
 npm link # or yarn link
@@ -94,8 +107,8 @@ inquirer 支持 Confirm 确认，List 单选，Checkbox 多选等多种交互方
 实现与询问用户信息的功能需要引入，文档看这里： [inquirer.js](https://github.com/SBoudrias/Inquirer.js/)
 
 ```shell
-# 安装inquirer
-npm install --save inquirer
+# 安装inquirer，安装到dev环境即可
+npm install --save-dev inquirer
 ```
 
 接着我们在 cli.js 来设置我们的问题
@@ -185,6 +198,7 @@ body {
 > 树形目录生成工具：[npm - treer](https://www.npmjs.com/package/treer)
 
 ```shell
+# treer -i "排除目录名" -e "生成文件名.md"
 treer -i "node_modules" -e "tree.md"
 ```
 
@@ -204,7 +218,7 @@ my-node-cli
 这里借助 ejs 模版引擎将用户输入的数据渲染到模版文件上
 
 ```shell
-npm install ejs --save
+npm install --save-dev ejs
 ```
 
 完善后到 cli.js
@@ -323,7 +337,7 @@ my-node-cli
 
 更多用法 [中文文档](https://github.com/tj/commander.js/blob/master/Readme_zh-CN.md)
 
-简单案例 
+下面单独在 demos 的文件夹中创建项目 
 
 #### 1.1 新建一个关于 Commander 的 Node Cli 项目
 创建基本目录
@@ -418,10 +432,121 @@ Commands:
   help [command]  display help for command
 ```
 
-这个时候就有了 `my-vue` 命令使用的说明信息，在 Commands 下面出现了我们刚刚创建的 create 命令 `create <name>`，我们在命令行中运行一下，成功打印出来：
+在 Commands 下面就出现了我们刚刚创建的 create 命令 `create <name>`，我们在命令行中运行一下，成功打印出来：
 
 ```shell
-PS D:\XPROJECT\FrontEnd-Replay\FEE\my-node-cli\demos\commander-demo> commander create my-app
+$ commander create my-app
 project name is my-app
 ```
+
+### 2. chalk 命令行美化工具
+chalk（粉笔）可以**美化命令行中输出内容的样式**
+
+#### 2.1 新建一个关于 chalk 的项目
+为了方便复制 commander-demo 的项目到新的系项目 chalk-demo
+
+安装依赖
+```shell
+npm install --save-dev chalk
+```
+
+#### 2.2 基本使用
+改下 package.json 的名字为 chalk-demo
+
+同样打开 bin/cli.js，编写以下代码：
+
+```JavaScript
+#! /usr/bin/env node
+
+const program = require('commander')
+const chalk = require('chalk')
+
+program
+.version('0.1.0')
+.command('create <name>')
+.description('create a new project')
+.action(name => { 
+    // 打印命令行输入的值
+
+    // 文本样式
+    console.log("project name is " + chalk.bold(name))
+
+    // 颜色
+    console.log("project name is " + chalk.cyan(name))
+    console.log("project name is " + chalk.green(name))
+
+    // 背景色
+    console.log("project name is " + chalk.bgRed(name))
+
+    // 使用RGB颜色输出
+    console.log("project name is " + chalk.rgb(4, 156, 219).underline(name));
+    console.log("project name is " + chalk.hex('#049CDB').bold(name));
+    console.log("project name is " + chalk.bgHex('#049CDB').bold(name))
+})
+
+program.parse()
+```
+
+在命令行中运行项目 chalk-demo create my-app 看一下效果，结果报错了：
+
+**问题：**
+```shell
+$ chalk-demo create my-app
+internal/modules/cjs/loader.js:1080
+      throw new ERR_REQUIRE_ESM(filename, parentPath, packageJsonPath);
+      ^
+
+Error [ERR_REQUIRE_ESM]: Must use import to load ES Module: D:\LAB\FrontEnd-Replay\FEE\my-node-cli\demos\chalk-demo\node_modules\chalk\source\index.js
+require() of ES modules is not supported.
+require() of D:\LAB\FrontEnd-Replay\FEE\my-node-cli\demos\chalk-demo\node_modules\chalk\source\index.js from D:\LAB\FrontEnd-Replay\FEE\my-node-cli\demos\chalk-demo\bin\cli.js is an ES module file as it is a .js file whose nearest parent package.json contains "type": "module" which defines all .js files in that package scope as ES modules.
+Instead rename index.js to end in .cjs, change the requiring code to use import(), or remove "type": "module" from D:\LAB\FrontEnd-Replay\FEE\my-node-cli\demos\chalk-demo\node_modules\chalk\package.json.
+
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1080:13)
+    at Module.load (internal/modules/cjs/loader.js:928:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:769:14)
+    at Module.require (internal/modules/cjs/loader.js:952:19)
+    at require (internal/modules/cjs/helpers.js:88:18)
+    at Object.<anonymous> (D:\LAB\FrontEnd-Replay\FEE\my-node-cli\demos\chalk-demo\bin\cli.js:4:15)
+    at Module._compile (internal/modules/cjs/loader.js:1063:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)
+    at Module.load (internal/modules/cjs/loader.js:928:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:769:14) {
+  code: 'ERR_REQUIRE_ESM'
+}
+```
+
+
+**回答：**
+这是因为引用的chalk 5.0模块是一个ES Module，不支持require()引入了。而当前Node.js环境默认是支持CommonJS（require）规范的，不支持ES Module。可以通过以下方法解决这个问题：
+
+1.  在引用chalk模块的地方使用ES Module的方式导入，即使用`import`语句代替`require`语句，例如：
+    
+    ```js
+    import chalk from 'chalk';
+    ```
+2.  然后 cli.js 文件中改为以下：
+
+```JavaScript
+#! /usr/bin/env node
+
+import commander from 'commander';
+import chalk from 'chalk';
+
+commander.program
+.version('0.1.0')
+.command('create <name>')
+.description('create a new project')
+.action(name => {
+// code...
+})
+
+commander.program.parse()
+```
+
+
+**问题：** 我们注意到 commander-demo 项目中 commander 包是 require 引入的，也就是使用的是 commonJS 规范，而这个项目改为了 `"type": "module"` 为何依然可以正常运行呢？
+
+**回答：** 因为项目中使用了 Babel 或者 webpack，它们可以将 ES6 的 import 语句转换成 CommonJS 的 require 语句，从而让你的代码可以在 CommonJS 环境中运行。简单理解是 import（ESModules） 同时兼容 require（commonJS）
+
+[import 和 require 导入的区别？](/NodeJS/importAndRequire/README.md)
 
