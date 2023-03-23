@@ -1,0 +1,21 @@
+{
+  "name": "ora-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cli.js",
+  "bin": {
+    "ora-demo": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ora": "^6.2.0",
+    "commander": "^7.2.0"
+  },
+  "dependencies": {}
+}

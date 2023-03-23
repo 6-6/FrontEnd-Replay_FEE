@@ -550,3 +550,76 @@ commander.program.parse()
 
 [import 和 require 导入的区别？](/NodeJS/importAndRequire/README.md)
 
+### 3. ora 命令行 loading 动效
+复制 commander-demo 这个项目，同上操作
+
+```shell
+# 安装ora，安装到dev环境即可
+npm install --save-dev ora
+```
+
+运行 `ora-demo create my-app` 可以看到 loading 成功加载
+
+```shell
+# 输出结果
+$ ora-demo create my-app
+project name is my-app
+✔ Loading succeed
+```
+
+### 4. cross-spawn 跨平台 shell 工具
+在脚手架里面，可以用来自动执行 shell 命令
+
+复制 chalk-demo 这个项目，其它也是同上操作
+
+```shell
+npm i -D cross-spawn
+```
+
+同样打开 bin/cli.js，编写以下代码：
+```JavaScript
+#! /usr/bin/env node
+import spawn from 'cross-spawn';
+import chalk from 'chalk';
+
+// 定义需要按照的依赖
+const dependencies = ['vue', 'vuex', 'vue-router'];
+
+// 执行安装
+const child = spawn('npm', ['install', '-D'].concat(dependencies), { 
+    stdio: 'inherit' 
+});
+
+// 监听执行结果
+child.on('close', function(code) {
+    // 执行失败
+    if(code !== 0) {
+        console.log(chalk.red('Error occurred while installing dependencies!'));
+        process.exit(1);
+    }
+    // 执行成功
+    else {
+        console.log(chalk.cyan('Install finished'))
+    }
+})
+```
+
+可以看到相关依赖都下载并且安装成功了
+```shell
+$ cross-spawn-demo
+npm WARN deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+npm WARN cross-spawn-demo@1.0.0 No description
+npm WARN cross-spawn-demo@1.0.0 No repository field.
+
++ vuex@4.1.0
++ vue-router@4.1.6
++ vue@3.2.47
+added 24 packages from 44 contributors and audited 31 packages in 10.214s
+
+3 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+Install finished
+```
