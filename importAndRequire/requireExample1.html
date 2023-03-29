@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>requireJS导入配置依赖模块</title>
+  <!--传统的script方式引入-->
+  <!-- <script type="text/javascript" src="./js/requireExample1_1.js"></script> -->
+
+  <!--require的方式引入-->
+  <script type="text/javascript" src="./js/lib/require.js"></script>
+  <script type="text/javascript">
+    require(["./js/requireExample1_2"],function(){
+      //回调函数处理加载完毕后的逻辑
+      alert("加载完成！");
+    });
+  </script>
+</head>
+<body>
+  <p>传统的引入方式，alert执行的时候，html内容是一片空白的，这段文字并未被显示，当点击确定后，才出现，这就是JS阻塞浏览器渲染导致的结果。</p>
+  <p>requirejs具有如下优点：</p>
+  <ol>
+    <li>防止js加载阻塞页面渲染</li>
+    <li>使用程序调用的方式加载js，防出现如下丑陋的场景</li>
+  </ul>
+  <xmp>
+    <script type="text/javascript" src="a.js"></script>
+    <script type="text/javascript" src="b.js"></script>
+    <script type="text/javascript" src="c.js"></script>
+    <script type="text/javascript" src="d.js"></script>
+    <script type="text/javascript" src="e.js"></script>
+    <script type="text/javascript" src="f.js"></script>
+    <script type="text/javascript" src="g.js"></script>
+    <script type="text/javascript" src="h.js"></script>
+    <script type="text/javascript" src="i.js"></script>
+    <script type="text/javascript" src="j.js"></script>
+</xmp>
+
+参考：https://www.runoob.com/w3cnote/requirejs-tutorial-1.html
+</body>
+</html>
